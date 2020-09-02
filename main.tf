@@ -44,7 +44,16 @@ locals {
     attributes  = local.id_context.attributes
   }
 
-  generated_tags = { for l in keys(local.tags_context) : title(l) => local.tags_context[l] if length(local.tags_context[l]) > 0 }
+  intermediate_tags = { for k in keys(local.tags_context) :
+    k => local.tags_context[k]
+    if(length(local.tags_context[k]) > 0) && (k != "name")
+  }
+
+  generated_tags = merge(local.intermediate_tags,
+
+    {
+      "Name" = local.id
+  })
 
   id_context = {
     name        = local.name
